@@ -10,12 +10,15 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.0/css/brands.css">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.0/css/fontawesome.css">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.0/css/solid.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script>
     
         </script>
-        <script>            
+        <script>
+            var currentContent;
+
             function setText(contents) {
+                currentContent = contents;
                 for (id in contents) {
                     /*$(`#${id}`).text(contents[id]);*/
                     var element = document.getElementById(id);
@@ -26,23 +29,13 @@
             }
             
             function switchLanguage() {
-              setLanguage(language.nextLanguage)
-              getLanguage();
+                setLanguage(currentContent.nextLanguage)
+                loadContent();
             }
-            
-            /*function getGravatarImage() {
-                var link = $('#email-link').attr('href').replace('mailto:', '');
-                var hash = CryptoJS.MD5(link).toString();
-                $('#gravatar-image').attr('src', `https://www.gravatar.com/avatar/${hash}?size=50`);
-            }*/
 
-            function getLanguage() {
-                if (localStorage.getItem('language') == null) {
-                    var lang = (navigator.language || navigator.userLanguage) == 'ru-RU' ? 'ru' : 'en'
-                    setLanguage(lang)
-                }
+            function loadContent() {
                 $.ajax({ 
-                    url:  'bundle/lang/' +  localStorage.getItem('language') + '.json', 
+                    url:  'bundle/lang/' +  getLanguage() + '.json', 
                     dataType: 'json', async: false, dataType: 'json', 
                     success: function (lang) { setText(lang) } });
             }
@@ -50,11 +43,24 @@
             function setLanguage(lang) {
                 localStorage.setItem('language', lang);
             }
-    
-            $(document).ready(getLanguage());
+
+            function getLanguage(lang) {
+                var language = localStorage.getItem('language', lang);
+                if (language) {
+                    return language;
+                }
+                    
+                return (navigator.language || navigator.userLanguage) == 'ru-RU' ? 'ru' : 'en'
+            }
+            
+            /*function getGravatarImage() {
+                var link = $('#email-link').attr('href').replace('mailto:', '');
+                var hash = CryptoJS.MD5(link).toString();
+                $('#gravatar-image').attr('src', `https://www.gravatar.com/avatar/${hash}?size=50`);
+            }*/
         </script>
     </head>
-    <body onload="getLanguage()">
+    <body onload="loadContent()">
         <div id="wrapper" class="wrapper">
             <div class="site site-home">
                 <section>
